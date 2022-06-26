@@ -1,0 +1,43 @@
+---
+title: "Week 5"
+author: "Mayuree"
+date: '2022-06-25'
+output: word_document
+---
+
+
+```{r , echo=TRUE}
+##Importing the csv file from github
+url <- "https://raw.githubusercontent.com/fivethirtyeight/data/master/hate-crimes/hate_crimes.csv"
+data <- read.csv(url)
+```
+
+
+```{r , echo=TRUE}
+library(tidyverse)
+data %>% select(median_household_income, hate_crimes_per_100k_splc) %>% 
+  filter(if_all(c(median_household_income, hate_crimes_per_100k_splc), ~!is.na(.x))) %>% 
+  ggplot(aes(x=median_household_income, y=hate_crimes_per_100k_splc)) + 
+  geom_point() +
+  geom_smooth(method = "lm", se=TRUE, fullrange=FALSE, level=0.95)+
+  ggtitle("Hate Crime vs Income Inequality") +
+  xlab("Median household income") + 
+  ylab("Hate crimes per 100K people(Southern Poverty Law Center)")
+## This shows a scatterplot with respect to Income Inequality. This scatter plot shows that as the Income Inequality increases , the hate crimes also increases.
+
+```
+
+
+```{r , echo=TRUE}
+#This bar graph shows the top states ranked according to hate_crimes_per_100k_splc.
+##This shows that District of Columbia(DC) has the highest Hatecrime & colorado has the lowesr rate of hate crime.
+library(ggplot2)
+# Basic barplot
+p<-ggplot(data = filter(data,dense_rank(desc(hate_crimes_per_100k_splc))<=10), aes(x= reorder(state,(hate_crimes_per_100k_splc)), y= hate_crimes_per_100k_splc)) +
+  geom_bar(stat="identity") 
+p
+
+p + coord_flip()
+
+```
+
